@@ -1,0 +1,40 @@
+mybatis-plus:
+  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
+    map-underscore-to-camel-case: true
+    # 该配置就是将带有下划线的表字段映射为驼峰格式的实体类属性
+  global-config:
+    db-config:
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ems?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: 160626
+
+#  mail:
+#    #smtp服务主机  qq邮箱则为smtp.qq.com
+#    host: smtp.qq.com
+#    #服务协议
+#    protocol: smtp
+#    # 编码集
+#    default-encoding: UTF-8
+#    #发送邮件的账户
+#    username: 1620977923@qq.com
+#    #授权码
+#    password: dpnzyromsxzfdaac
+#    test-connection: true
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#            required: true
+
+#redis:
+#  host: 127.0.0.1
+#  port: 6379
