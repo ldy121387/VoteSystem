@@ -1,18 +1,18 @@
 <template>
   <el-form ref="form" label-width="70px" :inline="true" class="login-container" :model="form" :rules="rules">
-    <h3 class="login_title">系统登录</h3>
-    <el-form-item label="用户名" prop="username">
-      <el-input v-model="form.account" placeholder="请输入账号"></el-input>
+    <h3 class="login_title">LOGIN</h3>
+    <el-form-item label="Account" prop="username">
+      <el-input v-model="form.account" placeholder="Please enter your account number"></el-input>
     </el-form-item>
-    <el-form-item label="密码" prop="password">
-      <el-input type="password" v-model="form.password" placeholder="请输入密码"></el-input>
+    <el-form-item label="Password" prop="password">
+      <el-input type="password" v-model="form.password" placeholder="Please enter your password"></el-input>
     </el-form-item>
-    <el-form :inline="true">
+    <el-form>
       <el-form-item>
-        <el-button @click="submit" style="margin-left: 75px;margin-top: 10px;" type="primary">登录</el-button>
+        <el-button @click="submit" style="margin-top: 10px;" type="primary">Login</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button @click="register" style="margin-left: 20px;margin-top: 10px;" type="primary">注册</el-button>
+        <el-button @click="register" style="margin-top: 10px;" type="primary">Register</el-button>
       </el-form-item>
     </el-form>
   </el-form>
@@ -45,6 +45,7 @@ export default {
           icon: 's-home',
           url: 'Home.vue'
         },
+        
       ],
       adminMenu: [
         {
@@ -126,6 +127,10 @@ export default {
   }
   .el-input {
     width: 198px;
+  }
+  .el-form{
+    display: flex;
+    padding-left: 50px;
   }
 }
 </style>

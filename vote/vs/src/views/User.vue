@@ -1,45 +1,45 @@
 <template>
   <div class="manage">
     <el-dialog
-        title="提示"
+        title="Reminder"
         :visible.sync="dialogVisible"
         width="50%"
         :before-close="handleClose">
       <!-- 用户的表单信息 -->
-      <el-form ref="form" :rules="rules" :inline="true" :model="form" label-width="80px">
-        <el-form-item label="账号" prop="account">
-          <el-input placeholder="请输入账号" v-model="form.account"></el-input>
+      <el-form ref="form" :rules="rules" :inline="true" :model="form" label-width="100px">
+        <el-form-item label="Account" prop="account">
+          <el-input placeholder="Please enter the account" v-model="form.account"></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input placeholder="请输入密码" v-model="form.password"></el-input>
+        <el-form-item label="password" prop="password">
+          <el-input placeholder="Please enter the password" v-model="form.password"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input placeholder="请输入邮箱" v-model="form.email"></el-input>
+        <el-form-item label="email" prop="email">
+          <el-input placeholder="Please enter the email" v-model="form.email"></el-input>
         </el-form-item>
-        <el-form-item label="昵称" prop="nickName">
-          <el-input placeholder="请输入昵称" v-model="form.nickName"></el-input>
+        <el-form-item label="nickName" prop="nickName">
+          <el-input placeholder="Please enter the nickName" v-model="form.nickName"></el-input>
         </el-form-item>
-        <el-form-item label="职责" prop="role">
-          <el-input placeholder="请选择职责" v-model="form.role"></el-input>
+        <el-form-item label="Role" prop="role">
+          <el-input placeholder="Please choose the role" v-model="form.role"></el-input>
         </el-form-item>
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-                <el-button @click="cancel">取 消</el-button>
-                <el-button type="primary" @click="submit">确 定</el-button>
+                <el-button @click="cancel">Cancel</el-button>
+                <el-button type="primary" @click="submit">Confirm</el-button>
             </span>
     </el-dialog>
     <div class="manage-header">
       <el-button @click="handleAdd" type="primary">
-        + 新增
+        + Add
       </el-button>
       <!-- form搜索区域 -->
       <el-form :inline="true" :model="userForm">
         <el-form-item>
-          <el-input placeholder="请输入名称" v-model="userForm.nickName"></el-input>
+          <el-input placeholder="Please enter the name" v-model="userForm.nickName"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit">查询</el-button>
+          <el-button type="primary" @click="onSubmit">Search</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -51,21 +51,21 @@
           style="width: 100%">
         <el-table-column
             prop="nickName"
-            label="昵称">
+            label="nickName">
         </el-table-column>
         <el-table-column
             prop="email"
-            label="邮件">
+            label="Email">
         </el-table-column>
         <el-table-column
             prop="role"
-            label="权限">
+            label="Role">
         </el-table-column>
         <el-table-column
-            label="管理">
+            label="Manage">
           <template slot-scope="scope">
-            <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+            <el-button size="mini" @click="handleEdit(scope.row)">Edit</el-button>
+            <el-button type="danger" size="mini" @click="handleDelete(scope.row)">Delete</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -95,19 +95,19 @@ export default {
       },
       rules: {
         account: [
-          { required: true, message: '请输入账号' }
+          { required: true, message: 'Please enter the Account' }
         ],
         password: [
-          { required: true, message: '请输入密码' }
+          { required: true, message: 'Please enter the Password' }
         ],
         email: [
-          { required: true, message: '请输入邮箱' }
+          { required: true, message: 'Please enter the email' }
         ],
         nickName: [
-          { required: true, message: '请输入昵称' }
+          { required: true, message: 'Please enter the nickName' }
         ],
         role: [
-          { required: true, message: '请选择职责' }
+          { required: true, message: 'Please enter the role' }
         ]
       },
       tableData: [],

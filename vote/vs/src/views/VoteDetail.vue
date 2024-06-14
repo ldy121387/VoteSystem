@@ -1,37 +1,37 @@
 <template>
   <div class="manage">
     <el-dialog
-        title="提示"
+        title="Reminder"
         :visible.sync="dialogVisible"
         width="50%"
         :before-close="handleClose">
       <!-- 用户的表单信息 -->
       <el-form ref="form" :rules="rules" :inline="true" :model="form" label-width="80px">
-        <el-form-item label="投票名称" prop="name">
-          <el-input placeholder="请输入设备名称" v-model="form.name"></el-input>
+        <el-form-item label="Name" prop="name">
+          <el-input placeholder="enter the name" v-model="form.name"></el-input>
         </el-form-item>
-        <el-form-item label="描述" prop="content">
-          <el-input placeholder="请输入投票描述" v-model="form.content"></el-input>
+        <el-form-item label="Descibe" prop="content">
+          <el-input placeholder="enter the describe" v-model="form.content"></el-input>
         </el-form-item>
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-                <el-button @click="cancel">取 消</el-button>
-                <el-button type="primary" @click="submit">确 定</el-button>
+                <el-button @click="cancel">Cancel</el-button>
+                <el-button type="primary" @click="submit">Confirm</el-button>
             </span>
     </el-dialog>
 
     <div class="manage-header">
       <el-button @click="handleAdd" type="primary">
-        + 新增
+        + Add
       </el-button>
       <!-- form搜索区域 -->
       <el-form :inline="true" :model="userForm">
         <el-form-item>
-          <el-input placeholder="请输入设备名称" v-model="userForm.name"></el-input>
+          <el-input placeholder="Please enter the name" v-model="userForm.name"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit">查询</el-button>
+          <el-button type="primary" @click="onSubmit">Search</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -44,22 +44,22 @@
           style="width: 100%">
         <el-table-column
             prop="name"
-            label="候选名称">
+            label="Name">
         </el-table-column>
         <el-table-column
             prop="content"
-            label="描述">
+            label="Describe">
         </el-table-column>
         <el-table-column
             prop="number"
-            label="票数">
+            label="Votes">
         </el-table-column>
         <el-table-column
-            label="管理">
+            label="Manage">
           <template slot-scope="scope">
-            <el-button type="danger" size="mini" @click="handleVote(scope.row)" :disabled="hasVoted"  >投票</el-button>
-            <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+            <el-button type="danger" size="mini" @click="handleVote(scope.row)" :disabled="hasVoted"  >Vote!</el-button>
+            <el-button size="mini" @click="handleEdit(scope.row)">Edit</el-button>
+            <el-button type="danger" size="mini" @click="handleDelete(scope.row)">Delete</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -94,10 +94,10 @@ export default {
       },
       rules: {
         name: [
-          { required: true, message: '请输入候选名称' }
+          { required: true, message: 'Please enter the name' }
         ],
         content: [
-          { required: true, message: '请输入描述' }
+          { required: true, message: 'Please enter the describe' }
         ],
       },
       tableData: [],
@@ -189,16 +189,16 @@ export default {
 
     },
     handleDelete(row) {
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('This action permanently deletes the vote, do you want to continue??', 'Reminder', {
+        confirmButtonText: 'Continue',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
         console.log({id : row.id})
         http.post(`/vDetail/delete/${row.id}`,).then(() => {
           this.$message({
             type: 'success',
-            message: '删除成功!',
+            message: 'Succesful Delete!',
           });
           // 重新获取列表的接口
           this.getList()
@@ -207,7 +207,7 @@ export default {
       }).catch(() => {
         this.$message({
           type: 'info',
-          message: '已取消删除'
+          message: 'Cancel'
         });
       });
     },

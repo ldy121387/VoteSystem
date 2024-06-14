@@ -1,8 +1,17 @@
 <template>
   <div class="header-container">
+    <img class="logo" src="../assets/blockchain.png" alt="">
+    <p class="text">BLOCK CHAIN VOTING</p>
     <div class="l-content">
-      <el-button @click="handleMenu" icon="el-icon-menu" size="mini"></el-button>
-      <span class="text">首页</span>
+      
+      <el-row class="row"></el-row>
+        <el-button class = "button1" @click="goToPage('/home')" type="text" size ="medium" >Home</el-button>
+        <el-button class = "button2" @click="goToPage('/vote')" type="text" size ="medium">Vote Manage</el-button>
+        <el-button class = "button3" @click="goToPage('/user')" type="text" size ="medium">User Manage</el-button>
+        <!-- <el-button @click="goToPage('/vote')" type="text" size ="medium">投票结果</el-button> -->
+        <el-button class = "button4" @click="goToPage('/home')" type="text" size ="medium">Help</el-button>
+        
+        
     </div>
     <div class="r-content">
       <el-dropdown @command="handleClick">
@@ -25,6 +34,9 @@ export default {
     return {}
   },
   methods: {
+    goToPage(path) {
+      this.$router.push({ path: path });
+    },
     handleMenu() {
       this.$store.commit('collapseMenu')
     },
@@ -46,22 +58,60 @@ export default {
 <style lang="less" scoped>
 .header-container {
   padding: 0 20px;
-  background-color: #333;
-  height: 60px;
+  height: 80px;
   display: flex;
-  justify-content: space-between;
+  
   align-items: center;
-  .text{
-    color: #fff;
-    font-size: 14px;
-    margin-left: 10px;
+  
+  
+  // &::after {
+  //   content: "";
+  //   position: absolute;
+  //   bottom: 0;
+  //   left: 350px;
+  //   width: 50%;
+  //   height: 1px;
+     background-color: hsl(0, 0%, 90%);
+  // }
+  .logo{
+      width: 45px;
+      height: 45px;
+      
+     
+}
+  .text{padding-left: 10px;}
+  .l-content{
+
+    
+    
+
+    margin: 0 auto;
+
+
+
+    .row{
+      padding:  0 200px;
+      
+
+
+      height: 5px;
+
+
+    }
   }
+
+  
+  
   .r-content{
     .user{
+      
+
       width: 40px;
       height: 40px;
       border-radius: 50%;
+
     }
   }
 }
+
 </style>
