@@ -16,12 +16,20 @@
         <el-form-item label="Describe" prop="content">
           <el-input placeholder="enter the describe" v-model="form.content"></el-input>
         </el-form-item>
-
-        <el-form-item label="Start Time" prop="startTime">
-          <el-input placeholder="enter the start time" v-model="form.startTime"></el-input>
+        <el-form-item label="startTime" prop="startTime">
+          <el-date-picker
+            v-model="startTime"
+            type="date"
+            placeholder="ChooseTime">
+          </el-date-picker>
         </el-form-item>
-        <el-form-item label="End Time" prop="endTime">
-          <el-input placeholder="enter the end time" v-model="form.endTime"></el-input>
+
+        <el-form-item label="endTime" prop="endTime">
+          <el-date-picker
+            v-model="endTime"
+            type="date"
+            placeholder="ChooseTime">
+          </el-date-picker>
         </el-form-item>
 
       </el-form>
@@ -111,7 +119,7 @@ export default {
           { required: true, message: 'please choose the vote type' }
         ],
         startTime: [
-        { required: true, message: 'please choose the Start Time' }
+          { required: true, message: 'please choose the Start Time' }
         ],
         endTime: [
           { required: true, message: 'please choose the End Time' }
