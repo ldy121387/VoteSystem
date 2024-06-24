@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/vote")
 public class VoteController {
 
-    private final VoteMapper voteMapper;
     private final VoteManage voteManage;
 
     @RequestMapping("/add")
@@ -41,4 +40,13 @@ public class VoteController {
         return voteManage.getVoteByPage(current,size,voteName);
     }
 
+    @GetMapping("/getVoteByTime")
+    public R getVoteByTime(){
+        return voteManage.getVoteByTime();
+    }
+
+    @PostMapping("/verify")
+    public R verify(@RequestParam Integer voteId){
+        return voteManage.verify(voteId);
+    }
 }

@@ -12,6 +12,7 @@ public class vDetail {
     private Integer id;
     private Integer voteId;
     private String name;
+    private String voteName;
     private String content;
     private Integer number;
     private String startTime;

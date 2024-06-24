@@ -1,6 +1,7 @@
 package com.example.equipmentmanagent.DTO;
 
 import com.baomidou.mybatisplus.annotation.*;
+import jnr.ffi.annotations.In;
 import lombok.Data;
 
 import java.util.Date;
@@ -16,6 +17,8 @@ public class Vote {
     private Integer type;
     private String startTime;
     private String endTime;
+    private Integer number;
+    private String pk;
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
     @TableField(fill = FieldFill.INSERT_UPDATE)

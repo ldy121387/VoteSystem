@@ -8,13 +8,38 @@ mybatis-plus:
       logic-delete-value: 1 # 逻辑已删除值(默认为 1)
       logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
 
+
+#linux
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ems?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=UTF-8
-    username: root
-    password: 160626
+    username: ldy
+    password: "160626"
 
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/ems?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=UTF-8
+#    username: root
+#    password: 160626
+
+  data:
+    redis:
+      # 连接地址
+      host: "localhost"
+      # 端口
+      port: 6379
+      # 数据库
+      database: 0
+      # 用户名，如果有
+      # username:
+      # 密码，如果有
+      # password:
+      # 连接超时
+      connect-timeout: 5s
+      # 读超时
+      timeout: 5s
 #  mail:
 #    #smtp服务主机  qq邮箱则为smtp.qq.com
 #    host: smtp.qq.com

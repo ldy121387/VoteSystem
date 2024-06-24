@@ -17,5 +17,10 @@ public interface VoteManage {
 
     R getVoteByPage(Integer current,Integer page,String voteName);
 
+    R getVoteByTime();
+
+    R verify(Integer voteId);
+
+
 //    R getBorrow(Integer current,Integer size,String reason);
 }

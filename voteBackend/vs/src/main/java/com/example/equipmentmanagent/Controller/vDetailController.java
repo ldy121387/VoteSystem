@@ -45,4 +45,14 @@ public class vDetailController {
         return vDetailManage.voteById(voteId);
     }
 
+    @GetMapping("/getVoteByBlock")
+    public R getVoteByBlock(@RequestParam Integer voteId){
+        return vDetailManage.getVoteByBlock(voteId);
+    }
+
+    @GetMapping("/getVoteDetailByBlock")
+    public R getVoteDetailByBlock(@RequestParam Integer voteId){
+        return vDetailManage.getVoteDetailByBlock(voteId);
+    }
+
 }
