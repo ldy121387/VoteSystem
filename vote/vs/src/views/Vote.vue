@@ -1,40 +1,56 @@
 <template>
   <div class="manage">
     <el-dialog
-        title="提示"
+        title="Reminder"
         :visible.sync="dialogVisible"
         width="50%"
         :before-close="handleClose">
       <!-- 用户的表单信息 -->
-      <el-form ref="form" :rules="rules" :inline="true" :model="form" label-width="80px">
-        <el-form-item label="投票名称" prop="name">
-          <el-input placeholder="请输入设备名称" v-model="form.name"></el-input>
+      <el-form ref="form" :rules="rules" :inline="true" :model="form" label-width="130px">
+        <el-form-item label="Name" prop="name">
+          <el-input placeholder="enter the name" v-model="form.name"></el-input>
         </el-form-item>
-        <el-form-item label="投票类型" prop="type">
-          <el-input placeholder="请输入投票类型" v-model="form.type"></el-input>
+        <el-form-item label="Type" prop="type">
+          <el-input placeholder="enter the type" v-model="form.type"></el-input>
         </el-form-item>
-        <el-form-item label="描述" prop="content">
-          <el-input placeholder="请输入投票描述" v-model="form.content"></el-input>
+        <el-form-item label="Describe" prop="content">
+          <el-input placeholder="enter the describe" v-model="form.content"></el-input>
         </el-form-item>
+        <el-form-item label="startTime" prop="startTime">
+          <el-date-picker
+            v-model="startTime"
+            type="date"
+            placeholder="ChooseTime">
+          </el-date-picker>
+        </el-form-item>
+
+        <el-form-item label="endTime" prop="endTime">
+          <el-date-picker
+            v-model="endTime"
+            type="date"
+            placeholder="ChooseTime">
+          </el-date-picker>
+        </el-form-item>
+
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-                <el-button @click="cancel">取 消</el-button>
-                <el-button type="primary" @click="submit">确 定</el-button>
+                <el-button @click="cancel">Cancel</el-button>
+                <el-button type="primary" @click="submit">Confirm</el-button>
             </span>
     </el-dialog>
 
     <div class="manage-header">
       <el-button @click="handleAdd" type="primary">
-        + 新增
+        + Add
       </el-button>
       <!-- form搜索区域 -->
       <el-form :inline="true" :model="userForm">
         <el-form-item>
-          <el-input placeholder="请输入设备名称" v-model="userForm.name"></el-input>
+          <el-input placeholder="Please enter the name" v-model="userForm.name"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit">查询</el-button>
+          <el-button type="primary" @click="onSubmit">Search</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -47,22 +63,22 @@
           style="width: 100%">
         <el-table-column
             prop="name"
-            label="投票名称">
+            label="Name">
         </el-table-column>
         <el-table-column
             prop="type"
-            label="投票类型">
+            label="Type">
         </el-table-column>
         <el-table-column
             prop="content"
-            label="描述">
+            label="Describe">
         </el-table-column>
         <el-table-column
-            label="管理">
+            label="Manage">
           <template slot-scope="scope">
-            <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
-            <el-button type="warning" size="mini" @click="handleEdit2(scope.row)">进入投票</el-button>
+            <el-button size="mini" @click="handleEdit(scope.row)">Edit</el-button>
+            <el-button type="danger" size="mini" @click="handleDelete(scope.row)">Delete</el-button>
+            <el-button type="warning" size="mini" @click="handleEdit2(scope.row)">Enter Voting</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -88,17 +104,25 @@ export default {
       form: {
         name: '',
         content: '',
-        type: ''
+        type: '',
+        startTime: '',
+        endTime: ''
       },
       rules: {
         name: [
-          { required: true, message: '请输入投票名称' }
+          { required: true, message: 'please enter the name' }
         ],
         content: [
-          { required: true, message: '请输入描述' }
+          { required: true, message: 'please describe the vote' }
         ],
         type: [
-          { required: true, message: '请选择类别' }
+          { required: true, message: 'please choose the vote type' }
+        ],
+        startTime: [
+          { required: true, message: 'please choose the Start Time' }
+        ],
+        endTime: [
+          { required: true, message: 'please choose the End Time' }
         ],
       },
       tableData: [],
@@ -193,16 +217,16 @@ export default {
       this.form = JSON.parse(JSON.stringify(row))
     },
     handleDelete(row) {
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('This action permanently deletes the vote, do you want to continue??', 'Reminder', {
+        confirmButtonText: 'Continue',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
         console.log({id : row.id})
-        http.post(`/device/vote/${row.id}`,).then(() => {
+        http.post(`/vote/delete/${row.id}`,).then(() => {
           this.$message({
             type: 'success',
-            message: '删除成功!',
+            message: 'Successful Delete!',
           });
           // 重新获取列表的接口
           this.getList()
@@ -211,7 +235,7 @@ export default {
       }).catch(() => {
         this.$message({
           type: 'info',
-          message: '已取消删除'
+          message: 'Cancel'
         });
       });
     },
