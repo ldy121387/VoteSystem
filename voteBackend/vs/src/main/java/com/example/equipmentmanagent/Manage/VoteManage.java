@@ -21,6 +21,10 @@ public interface VoteManage {
 
     R verify(Integer voteId);
 
+    R getHash(Integer voteId);
+
+    R bind(String hashValue);
+
 
 //    R getBorrow(Integer current,Integer size,String reason);
 }

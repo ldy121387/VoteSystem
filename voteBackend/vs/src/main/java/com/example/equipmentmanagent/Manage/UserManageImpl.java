@@ -111,8 +111,10 @@ public class UserManageImpl implements UserManage{
             jsonObject.put("role", role);
             String nickName = userList.get(0).getNickName();
             String pk = userList.get(0).getPk();
+            Integer userId = userList.get(0).getId();
             stringRedisTemplate.opsForValue().set("nickName",nickName);
             stringRedisTemplate.opsForValue().set("pk",pk);
+            stringRedisTemplate.opsForValue().set("userId",String.valueOf(userId));
 //            Integer expire = Redisconstant.EXPIRE;
 //            redisTemplate.opsForValue().set("role", role);
 //            redisTemplate.opsForValue().set("token", JwtUtil.createToken());

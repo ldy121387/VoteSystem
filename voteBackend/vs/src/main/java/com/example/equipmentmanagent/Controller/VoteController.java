@@ -49,4 +49,14 @@ public class VoteController {
     public R verify(@RequestParam Integer voteId){
         return voteManage.verify(voteId);
     }
+
+    @GetMapping("/getHash")
+    public R getHash(@RequestParam Integer voteId){
+        return voteManage.getHash(voteId);
+    }
+
+    @PostMapping("/bind")
+    public R bind(@RequestParam String hashValue){
+        return voteManage.bind(hashValue);
+    }
 }

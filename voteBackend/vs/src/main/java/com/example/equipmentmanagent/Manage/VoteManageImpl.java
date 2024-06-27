@@ -5,8 +5,11 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.equipmentmanagent.DTO.Vote;
+import com.example.equipmentmanagent.DTO.voteUser;
 import com.example.equipmentmanagent.Mapper.VoteMapper;
+import com.example.equipmentmanagent.Mapper.voteUserMapper;
 import com.example.equipmentmanagent.Service.VoteService;
+import com.example.equipmentmanagent.Service.VoteUserService;
 import com.example.equipmentmanagent.utils.HttpClientUtils;
 import com.example.equipmentmanagent.utils.R;
 import lombok.AllArgsConstructor;
@@ -25,9 +28,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Component
 @AllArgsConstructor
@@ -36,6 +37,8 @@ public class VoteManageImpl implements VoteManage{
     private final VoteMapper voteMapper;
     private final VoteService voteService;
     private final vDetailMapper vDetailMapper;
+    private final voteUserMapper voteUserMapper;
+    private final VoteUserService voteUserService;
 
     @Autowired
     StringRedisTemplate stringRedisTemplate;
@@ -67,6 +70,7 @@ public class VoteManageImpl implements VoteManage{
         //获取hash
         String pk = String.valueOf(stringRedisTemplate.opsForValue().get("pk"));
         String url = "http://127.0.0.1:5000/enc/hash_public_key";
+//        String url = "http://110.41.56.14:5000/enc/hash_public_key";
         HashMap<String, String> map = new HashMap<>();
         map.put("public_key", pk);
         String pkHash = null;
@@ -93,8 +97,40 @@ public class VoteManageImpl implements VoteManage{
 
         vote.setPk(hash);
         if (voteMapper.insert(vote) == 1) {
-            //创建时 需要生成csv文件
+            //创建时 需要生成n个hash 用于绑定
 
+            //调取接口获取hash
+
+            String urlManyHash = "http://127.0.0.1:5000/enc/many_hash";
+//            String urlManyHash = "http://110.41.56.14:5000/enc/many_hash";
+            HashMap<String, String> mapHash = new HashMap<>();
+            mapHash.put("blockchain_id", String.valueOf(vote.getId()));
+            mapHash.put("public_key", String.valueOf(vote.getPk()));
+            mapHash.put("max_votes", String.valueOf(vote.getNumber()));
+            try {
+                String json = HttpClientUtils.post(urlManyHash, mapHash);
+                JSONObject jsonObject = JSON.parseObject(json);
+                JSONArray array = jsonObject.getJSONArray("details");
+
+                List<String> hashList = array.toJavaList(String.class);
+
+                //将这些hash插入voteUser voteId hashValue
+                for (String hashValue : hashList){
+//                    System.out.println(hashValue);
+                    voteUser voteUser = new voteUser();
+                    voteUser.setVoteId(vote.getId());
+                    voteUser.setHashValue(hashValue);
+                    voteUserMapper.insert(voteUser);
+                }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+
+            //创建时 需要生成csv文件
             //获取最大票数
             int maxNumber = vote.getNumber();
 
@@ -258,7 +294,12 @@ public class VoteManageImpl implements VoteManage{
 
     @Override
     public R getVoteByPage(Integer current, Integer page,String voteName) {
-        IPage<Vote> voteIPage = voteService.getVoteByPage(current,page,voteName);
+
+        //根据userId 获取voteId
+        Integer userId = Integer.valueOf(stringRedisTemplate.opsForValue().get("userId"));
+        List<Integer> voteIdList = voteUserService.getVoteIdByUserId(userId);
+        //根据voteId分页查询
+        IPage<Vote> voteIPage = voteService.getVotePageByVoteId(current,page,voteName,voteIdList);
         if (voteIPage.getSize()>0){
             return R.success(voteIPage);
         }
@@ -315,6 +356,32 @@ public class VoteManageImpl implements VoteManage{
             msg = "Blockchain connection anomaly";
         }
         return R.success(msg);
+    }
+
+    @Override
+    public R getHash(Integer voteId) {
+        List<voteUser> hashList = new ArrayList<>();
+        hashList = voteService.getHashByVoteId(voteId);
+
+        if(hashList != null && hashList.size() != 0){
+            return R.success(hashList);
+        } else {
+            return R.failed("获取hash列表失败");
+        }
+
+    }
+
+    @Override
+    public R bind(String hashValue) {
+        Integer userId = Integer.valueOf(stringRedisTemplate.opsForValue().get("userId"));
+        boolean res = voteUserService.bind(hashValue,userId);
+
+        if(res){
+            return R.ok("Bind successfully");
+        } else {
+            return R.failed("Binding Failure");
+        }
+
     }
 
     public static String getMsgFromJson(String jsonString) {
