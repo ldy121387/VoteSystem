@@ -49,6 +49,23 @@ public class VoteServiceImpl implements VoteService{
     }
 
     @Override
+    public List<Vote> getVoteByTimeAndUser(List<Integer> voteList) {
+        Date currentTime = new Date(); // 获取当前时间，假设已经有实现
+
+        // 创建 QueryWrapper 对象
+        QueryWrapper<Vote> wrapper = new QueryWrapper<>();
+        // 设置时间条件：endTime 大于当前时间
+        wrapper.gt("end_time", currentTime);
+        // 设置 ID 在给定列表中的条件
+        wrapper.in("id", voteList);
+
+        // 执行查询
+        List<Vote> filteredVotes = voteMapper.selectList(wrapper);
+
+        return filteredVotes;
+    }
+
+    @Override
     public List<voteUser> getHashByVoteId(Integer voteId) {
         QueryWrapper<voteUser> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("vote_id", voteId); // 添加查询条件，vote_id = voteId

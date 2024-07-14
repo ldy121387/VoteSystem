@@ -17,9 +17,13 @@ public interface vDetailManage {
 
     R getVoteByPage(Integer current,Integer page,String voteName,Integer voteId);
 
-    R voteById(Integer voteId);
+    R voteById(Integer voteId,String signature,Integer voteID);
 
     R getVoteByBlock(Integer voteId);
 
     R getVoteDetailByBlock(Integer voteId);
+
+    R getAllVoteDetailByBlock(Integer voteId);
+
+    R getVoted(Integer vDetailId);
 }

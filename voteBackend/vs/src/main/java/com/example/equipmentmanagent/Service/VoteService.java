@@ -14,6 +14,8 @@ public interface VoteService {
 
     List<Vote> getVoteByTime();
 
+    List<Vote> getVoteByTimeAndUser(List<Integer> voteList);
+
     List<voteUser> getHashByVoteId(Integer voteId);
 
     IPage<Vote> getVotePageByVoteId(Integer page, Integer current, String voteName,List<Integer> voteIdList);

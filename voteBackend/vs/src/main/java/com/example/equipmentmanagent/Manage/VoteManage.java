@@ -25,6 +25,10 @@ public interface VoteManage {
 
     R bind(String hashValue);
 
+    R getVoteByPageAdmin(Integer current, Integer size, String voteName);
+
+    R getVoteByTimeAndUser();
+
 
 //    R getBorrow(Integer current,Integer size,String reason);
 }

@@ -40,9 +40,19 @@ public class VoteController {
         return voteManage.getVoteByPage(current,size,voteName);
     }
 
+    @GetMapping("/getVoteByPageAdmin")
+    public R getVoteByPageAdmin(@RequestParam Integer current,@RequestParam Integer size,@RequestParam String voteName){
+        return voteManage.getVoteByPageAdmin(current,size,voteName);
+    }
+
     @GetMapping("/getVoteByTime")
     public R getVoteByTime(){
         return voteManage.getVoteByTime();
+    }
+
+    @GetMapping("/getVoteByTimeAndUser")
+    public R getVoteByTimeAndUser(){
+        return voteManage.getVoteByTimeAndUser();
     }
 
     @PostMapping("/verify")

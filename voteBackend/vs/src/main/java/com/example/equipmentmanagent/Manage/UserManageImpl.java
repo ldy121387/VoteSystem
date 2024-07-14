@@ -47,8 +47,12 @@ public class UserManageImpl implements UserManage{
             String result = null;
             if (detailsArray != null && !detailsArray.isEmpty()) {
                 // 获取数组中的第一个元素
-                result = detailsArray.getString(0);
-                System.out.println(result);
+                StringBuilder stringBuilder = new StringBuilder();
+                for (int i = 0; i < detailsArray.size(); i++) {
+                    stringBuilder.append(detailsArray.getString(i));
+                }
+                // 将拼接后的字符串赋给 result
+                result = stringBuilder.toString();
             } else {
                 System.out.println("details 数组为空或不存在");
             }
@@ -158,6 +162,7 @@ public class UserManageImpl implements UserManage{
         // 提取密钥内容，不包括起始和结束标记
         String keyContent = result.substring(beginIndex + beginMarker.length(), endIndex).trim();
         return keyContent.replaceAll("\\s+", ""); // 移除所有空格换行
+//        return keyContent; // 移除所有空格换行
     }
 
 }

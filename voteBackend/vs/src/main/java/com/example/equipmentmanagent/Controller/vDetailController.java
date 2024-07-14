@@ -41,8 +41,8 @@ public class vDetailController {
     }
 
     @PostMapping("/voteById")
-    public R voteById(@RequestParam Integer voteId){
-        return vDetailManage.voteById(voteId);
+    public R voteById(@RequestParam Integer voteId,@RequestParam String signature,@RequestParam Integer voteID){
+        return vDetailManage.voteById(voteId,signature,voteID);
     }
 
     @GetMapping("/getVoteByBlock")
@@ -53,6 +53,16 @@ public class vDetailController {
     @GetMapping("/getVoteDetailByBlock")
     public R getVoteDetailByBlock(@RequestParam Integer voteId){
         return vDetailManage.getVoteDetailByBlock(voteId);
+    }
+
+    @GetMapping("/getAllVoteDetailByBlock")
+    public R getAllVoteDetailByBlock(@RequestParam Integer voteId){
+        return vDetailManage.getAllVoteDetailByBlock(voteId);
+    }
+
+    @GetMapping("/getVoted")
+    public R getVoted(@RequestParam Integer vDetailId){
+        return vDetailManage.getVoted(vDetailId);
     }
 
 }

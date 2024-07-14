@@ -6,8 +6,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.equipmentmanagent.DTO.Vote;
 import com.example.equipmentmanagent.DTO.vDetail;
+import com.example.equipmentmanagent.DTO.vdetailUser;
 import com.example.equipmentmanagent.Mapper.VoteMapper;
 import com.example.equipmentmanagent.Mapper.vDetailMapper;
+import com.example.equipmentmanagent.Mapper.vDetailUserMapper;
 import com.example.equipmentmanagent.Service.vDetailService;
 import com.example.equipmentmanagent.utils.HttpClientUtils;
 import com.example.equipmentmanagent.utils.R;
@@ -32,6 +34,7 @@ public class vDetailManageImpl implements vDetailManage{
     private final vDetailService vDetailService;
     private final vDetailMapper vDetailMapper;
     private final VoteMapper voteMapper;
+    private final vDetailUserMapper vDetailUserMapper;
 
 //    private final RedisTemplate<String,String> redisTemplate;
 
@@ -77,19 +80,46 @@ public class vDetailManageImpl implements vDetailManage{
     }
 
     @Override
-    public R voteById(Integer voteId) {
+    public R voteById(Integer voteId,String signature,Integer voteID) {
         vDetail vDetailOne = vDetailMapper.selectById(voteId);
         int number = vDetailOne.getNumber();
         number++;
         String nickName = String.valueOf(stringRedisTemplate.opsForValue().get("nickName"));
         String pk = String.valueOf(stringRedisTemplate.opsForValue().get("pk"));
+        String userId = stringRedisTemplate.opsForValue().get("userId");
+        System.out.println("pk1"+pk);
         vDetailOne.setVoteName(nickName);
         vDetailOne.setNumber(number);
+        boolean sign = false;
+        String urlSign = "http://127.0.0.1:5000/enc/digital_signer";
+//        String urlSign = "http://110.41.56.14:5000/enc/digital_signer";
+        HashMap<String, String> mapHash = new HashMap<>();
+        mapHash.put("public_key", pk);
+        mapHash.put("data", String.valueOf(voteId));
+        mapHash.put("signature", signature);
+        System.out.println("public_key"+pk);
+        System.out.println("data"+voteId);
+        System.out.println("signature"+signature);
+        String pkR = pk.replaceAll("\\r?\\n", "");
+        try {
+            String json = HttpClientUtils.post(urlSign, mapHash);
+            JSONObject jsonObject = JSON.parseObject(json);
+
+            // 获取 msg 字段的值
+            String msg = jsonObject.getString("msg");
+            if(msg != null && msg.equals("Success")){
+                sign = true;
+            } else {
+                sign = false;
+            }
+            System.out.println(msg);
 
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-
-        if (vDetailMapper.updateById(vDetailOne) == 1) {
+        if (sign && vDetailMapper.updateById(vDetailOne) == 1) {
 
             String id = String.valueOf(vDetailOne.getVoteId()); // 指定的ID
 //            String directoryPath = "D:\\VoteSystem\\VoteSystem\\voteBackend"; // CSV文件所在的目录路径
@@ -103,13 +133,15 @@ public class vDetailManageImpl implements vDetailManage{
                 File file = csvFiles[0];
                 try (PrintWriter writer = new PrintWriter(new FileWriter(file, true))) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append(pk);
+                    System.out.println("pkR"+pkR);
+                    sb.append(pkR);
                     sb.append(',');
                     sb.append(vDetailOne.getName());
                     sb.append(',');
                     sb.append(System.currentTimeMillis());
                     sb.append('\n');
                     writer.write(sb.toString());
+                    System.out.println("sb"+sb.toString());
 
                     System.out.println("Data has been written to " + file.getName());
                 } catch (IOException e) {
@@ -120,6 +152,12 @@ public class vDetailManageImpl implements vDetailManage{
             } else {
                 System.out.println("Multiple CSV files found with the specified ID. Please ensure there is only one such file.");
             }
+
+            //标记用户已投票逻辑
+            vdetailUser vdetailUser1 = new vdetailUser();
+            vdetailUser1.setUserId(Integer.valueOf(userId));
+            vdetailUser1.setVdetailId(voteID);
+            vDetailUserMapper.insert(vdetailUser1);
 
 //            String fileName = "csv_vote" + vDetailOne.getVoteId()+".csv";
 //
@@ -140,9 +178,9 @@ public class vDetailManageImpl implements vDetailManage{
 //                e.printStackTrace();
 //            }
 
-            return R.ok("投票成功");
+            return R.ok("Vote Successful");
         }
-        return R.failed("更新失败");
+        return R.failed("Vote failed. Please re-vote.");
 
     }
 
@@ -274,5 +312,52 @@ public class vDetailManageImpl implements vDetailManage{
         }
 
         return R.success(voteDetails);
+    }
+
+    @Override
+    public R getAllVoteDetailByBlock(Integer voteId) {
+        String urlBlock = "http://127.0.0.1:5000/data/load_blockchain";
+//        String urlBlock = "http://110.41.56.14:5000/data/load_blockchain";
+        HashMap<String, String> mapHash = new HashMap<>();
+        mapHash.put("blockchain_id", String.valueOf(voteId));
+        JSONArray res = new JSONArray();
+        try {
+            String json = HttpClientUtils.post(urlBlock, mapHash);
+            JSONObject jsonObject = JSON.parseObject(json);
+            JSONArray array = jsonObject.getJSONArray("details");
+//            JSONObject res = new JSONObject();
+
+            if (array != null && array.size() > 0) {
+                // 遍历数组中的每个元素
+                for (int i = 0; i < array.size(); i++) {
+                    String element = array.getString(i);
+                    JSONObject elementObject = JSON.parseObject(element);
+                    res.add(elementObject);
+                }
+
+                // 打印voteDetails数组
+                System.out.println(res.toJSONString());
+
+            } else {
+                // 数组为空或者长度为0，需要进行相应的处理
+                System.out.println("array为空");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return R.success(res);
+    }
+
+    @Override
+    public R getVoted(Integer vDetailId) {
+        String userId = stringRedisTemplate.opsForValue().get("userId");
+        Integer count = vDetailUserMapper.getCountForUserAndVDetail(Integer.valueOf(userId),vDetailId);
+        if(count > 0){
+            return R.ok("true");
+        } else {
+            return R.ok("false");
+        }
     }
 }

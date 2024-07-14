@@ -69,6 +69,7 @@ public class VoteManageImpl implements VoteManage{
 
         //获取hash
         String pk = String.valueOf(stringRedisTemplate.opsForValue().get("pk"));
+        String userId = String.valueOf(stringRedisTemplate.opsForValue().get("userId"));
         String url = "http://127.0.0.1:5000/enc/hash_public_key";
 //        String url = "http://110.41.56.14:5000/enc/hash_public_key";
         HashMap<String, String> map = new HashMap<>();
@@ -94,7 +95,7 @@ public class VoteManageImpl implements VoteManage{
             System.out.println("pkHash是空");
         }
 
-
+        Integer maxNumber = vote.getNumber() + 1;
         vote.setPk(hash);
         if (voteMapper.insert(vote) == 1) {
             //创建时 需要生成n个hash 用于绑定
@@ -106,7 +107,7 @@ public class VoteManageImpl implements VoteManage{
             HashMap<String, String> mapHash = new HashMap<>();
             mapHash.put("blockchain_id", String.valueOf(vote.getId()));
             mapHash.put("public_key", String.valueOf(vote.getPk()));
-            mapHash.put("max_votes", String.valueOf(vote.getNumber()));
+            mapHash.put("max_votes", String.valueOf(maxNumber));
             try {
                 String json = HttpClientUtils.post(urlManyHash, mapHash);
                 JSONObject jsonObject = JSON.parseObject(json);
@@ -115,9 +116,23 @@ public class VoteManageImpl implements VoteManage{
                 List<String> hashList = array.toJavaList(String.class);
 
                 //将这些hash插入voteUser voteId hashValue
-                for (String hashValue : hashList){
-//                    System.out.println(hashValue);
+//                for (String hashValue : hashList){
+////                    System.out.println(hashValue);
+//                    voteUser voteUser = new voteUser();
+//                    voteUser.setVoteId(vote.getId());
+//                    voteUser.setHashValue(hashValue);
+//                    voteUserMapper.insert(voteUser);
+//                }
+
+                for (int i = 0; i < hashList.size(); i++) {
+                    String hashValue = hashList.get(i);
                     voteUser voteUser = new voteUser();
+
+                    // 在第一个位置插入userId
+                    if (i == 0) {
+                        voteUser.setUserId(Integer.valueOf(userId));
+                    }
+
                     voteUser.setVoteId(vote.getId());
                     voteUser.setHashValue(hashValue);
                     voteUserMapper.insert(voteUser);
@@ -132,7 +147,7 @@ public class VoteManageImpl implements VoteManage{
 
             //创建时 需要生成csv文件
             //获取最大票数
-            int maxNumber = vote.getNumber();
+            int maxNumber2 = vote.getNumber();
 
             //获取最长时间
 //            String startDateStr = "2024-06-10";
@@ -149,7 +164,7 @@ public class VoteManageImpl implements VoteManage{
 
 
 
-            String fileName = vote.getId() + "-" + maxNumber + "-" + daysBetween + "-" + hash +".csv";
+            String fileName = vote.getId() + "-" + maxNumber2 + "-" + daysBetween + "-" + hash +".csv";
 //            String directoryPath = "D:\\VoteSystem\\VoteSystem\\voteBackend"; // CSV文件所在的目录路径
             String directoryPath = "/usr/vbb/records/vote_pool"; // CSV文件所在的目录路径
             System.out.println(fileName);
@@ -345,15 +360,15 @@ public class VoteManageImpl implements VoteManage{
         if(s.equals(res_syn_blocks)){
             if(s.equals(res_verify_blocks)){
                 if(s.equals(res_verify_merkles)){
-                    msg = "Verification complete.No errors.";
+                    msg = "Success: All verification checks passed successfully. <br> All the data is secure and authentic.";
                 } else {
-                    msg = "Tampering with voting data";
+                    msg = "Error: Vote data tampering detected! <br> Please contact the top administrator.";
                 }
             } else {
-                msg = "Blockchain data anomalies";
+                msg = "Error: Data tampering detected in a block! <br> Please contact the top administrator.";
             }
         } else {
-            msg = "Blockchain connection anomaly";
+            msg = "Error: Block connection issue detected! <br> Please contact the top administrator.";
         }
         return R.success(msg);
     }
@@ -382,6 +397,30 @@ public class VoteManageImpl implements VoteManage{
             return R.failed("Binding Failure");
         }
 
+    }
+
+    @Override
+    public R getVoteByPageAdmin(Integer current, Integer size, String voteName) {
+
+        //根据voteId分页查询
+        IPage<Vote> voteIPage = voteService.getVoteByPage(current,size,voteName);
+        if (voteIPage.getSize()>0){
+            return R.success(voteIPage);
+        }
+        else return R.failed("获取投票失败");
+    }
+
+    @Override
+    public R getVoteByTimeAndUser() {
+        //根据userId 获取voteId
+        Integer userId = Integer.valueOf(stringRedisTemplate.opsForValue().get("userId"));
+        List<Integer> voteIdList = voteUserService.getVoteIdByUserId(userId);
+
+        List<Vote> votes = voteService.getVoteByTimeAndUser(voteIdList);
+        if (!votes.isEmpty()){
+            return R.success(votes);
+        }
+        else return R.failed("当前无未截止投票");
     }
 
     public static String getMsgFromJson(String jsonString) {
